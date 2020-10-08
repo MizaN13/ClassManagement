@@ -14,6 +14,7 @@ namespace ClassManagement.Library.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Class> Classes { get; set; }
         public DbSet<Section> Sections { get; set; }
+        public DbSet<Department> Departments { get; set; }
         public SchoolContext(string connectionString, string migrationAssemblyName)
         {
             _connectionString = connectionString;
@@ -41,6 +42,12 @@ namespace ClassManagement.Library.Data
                 .WithOne(sc => sc.Class)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            //One to One relationship between student and department
+            modelBuilder.Entity<Student>()
+               .HasOne(s => s.Department)
+               .WithOne(d => d.Student)
+               .HasForeignKey<Student>(d => d.DepatmentId);
+
             modelBuilder.Entity<Student>()
                         .Property(s => s.Id)
                         .HasDefaultValueSql("newid()");
@@ -49,6 +56,9 @@ namespace ClassManagement.Library.Data
                         .HasDefaultValueSql("newid()");
             modelBuilder.Entity<Section>()
                         .Property(sc => sc.Id)
+                        .HasDefaultValueSql("newid()");
+            modelBuilder.Entity<Department>()
+                        .Property(d => d.Id)
                         .HasDefaultValueSql("newid()");
 
             base.OnModelCreating(modelBuilder);
